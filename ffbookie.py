@@ -5,7 +5,7 @@ import pandas as pd
 class FFBookie(object):
     def __init__(self):
         self.league = self._setLeague(605278, 2024)
-        self.odds_df = pd.DataFrame(columns=["home", "away", "spread", "O/U"])
+        self.odds_df = pd.DataFrame(columns=["home", "away", "spread", "O/U", "Odds"])
         
     def __repr__(self) -> str:
         return "Odds for Domination League"
@@ -36,7 +36,7 @@ class FFBookie(object):
             spread = self._getSpread(home_proj, away_proj)
             ou = self._getOU(home_proj, away_proj)
 
-            new_row = {"home": home_team, "away": away_team, "spread": spread, "O/U": ou}
+            new_row = {"home": home_team, "away": away_team, "spread": spread, "O/U": ou, "Odds": "+110"}
             self.odds_df = pd.concat([self.odds_df, pd.DataFrame([new_row])], ignore_index=True)
 
     def save_odds(self, week) -> None:  
