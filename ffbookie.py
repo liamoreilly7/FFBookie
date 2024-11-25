@@ -46,7 +46,15 @@ class FFBookie(object):
         home_money_line = prob_to_money_line(home_win_prob_adjusted)
         away_money_line = prob_to_money_line(away_win_prob_adjusted)
         
-        return f"home ML: {home_money_line}, away ML: {away_money_line}"
+        if home_money_line > 0 and away_money_line > 0:
+            return f"home ML: +{home_money_line}, away ML: +{away_money_line}"
+        elif home_money_line > 0:
+            return f"home ML: +{home_money_line}, away ML: {away_money_line}"
+        elif away_money_line > 0:
+            return f"home ML: {home_money_line}, away ML: +{away_money_line}"
+        else:
+            return f"home ML: {home_money_line}, away ML: {away_money_line}"
+
 
     def calculate_odds(self, week: int) -> None:
         box_scores = self.league.box_scores(week)
