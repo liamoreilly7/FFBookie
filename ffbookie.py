@@ -1,11 +1,12 @@
 # NFL Import
 from espn_api.football import League
 import pandas as pd
+import math
 
 class FFBookie(object):
     def __init__(self):
         self.league = self._setLeague(605278, 2024)
-        self.odds_df = pd.DataFrame(columns=["home", "away", "spread", "O/U", "Odds"])
+        self.odds_df = pd.DataFrame(columns=["home", "away", "spread", "O/U", "ML"])
         
     def __repr__(self) -> str:
         return "Odds for Domination League"
@@ -23,6 +24,30 @@ class FFBookie(object):
         tot = round((home_proj + away_proj), 1)
         return f"{tot}"
 
+    def _getML(self, home_proj: float, away_proj: float, k=0.05, vig=0.048) -> str:
+        spread = home_proj - away_proj
+
+        # Convert spread to win probabilities using a logistic function
+        home_win_prob = 1 / (1 + math.exp(-k * spread))
+        away_win_prob = 1 - home_win_prob
+
+        # Adjust probabilities to include vig
+        total_prob = home_win_prob + away_win_prob
+        home_win_prob_adjusted = home_win_prob / total_prob * (1 - vig)
+        away_win_prob_adjusted = away_win_prob / total_prob * (1 - vig)
+
+        # Convert probabilities to money lines
+        def prob_to_money_line(prob):
+            if prob > 0.5:  # Favorite
+                return round(-100 * prob / (1 - prob))
+            else:  # Underdog
+                return round(100 * (1 - prob) / prob)
+
+        home_money_line = prob_to_money_line(home_win_prob_adjusted)
+        away_money_line = prob_to_money_line(away_win_prob_adjusted)
+        
+        return f"home ML: {home_money_line}, away ML: {away_money_line}"
+
     def calculate_odds(self, week: int) -> None:
         box_scores = self.league.box_scores(week)
 
@@ -35,8 +60,9 @@ class FFBookie(object):
 
             spread = self._getSpread(home_proj, away_proj)
             ou = self._getOU(home_proj, away_proj)
+            ml = self._getML(home_proj, away_proj)
 
-            new_row = {"home": home_team, "away": away_team, "spread": spread, "O/U": ou, "Odds": "+110"}
+            new_row = {"home": home_team, "away": away_team, "spread": spread, "O/U": ou, "ML": ml}
             self.odds_df = pd.concat([self.odds_df, pd.DataFrame([new_row])], ignore_index=True)
 
     def save_odds(self, week) -> None:  
