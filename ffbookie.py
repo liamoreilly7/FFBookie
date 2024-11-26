@@ -37,11 +37,12 @@ class FFBookie(object):
         away_win_prob_adjusted = away_win_prob / total_prob * (1 - vig)
 
         # Convert probabilities to money lines
+        
         def prob_to_money_line(prob):
             if prob > 0.5:  # Favorite
-                return round(-100 * prob / (1 - prob))
+                return round(-100 / (abs(prob - 1)))
             else:  # Underdog
-                return round(100 * (1 - prob) / prob)
+                return round((1 / prob - 1) * 100)
 
         home_money_line = prob_to_money_line(home_win_prob_adjusted)
         away_money_line = prob_to_money_line(away_win_prob_adjusted)
@@ -79,6 +80,6 @@ class FFBookie(object):
 if __name__ == "__main__":
     bookie = FFBookie()
 
-    week = 12
+    week = 13
     bookie.calculate_odds(week)
     bookie.save_odds(week)
