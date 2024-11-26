@@ -25,6 +25,7 @@ class FFBookie(object):
         return f"{tot}"
 
     def _getML(self, home_proj: float, away_proj: float, k=0.05, vig=0.048) -> str:
+        # Calculate the spread
         spread = home_proj - away_proj
 
         # Convert spread to win probabilities using a logistic function
@@ -36,8 +37,9 @@ class FFBookie(object):
         home_win_prob_adjusted = home_win_prob / total_prob * (1 - vig)
         away_win_prob_adjusted = away_win_prob / total_prob * (1 - vig)
 
+        # print(f"{home_win_prob_adjusted}, {away_win_prob_adjusted}")
+
         # Convert probabilities to money lines
-        
         def prob_to_money_line(prob):
             if prob > 0.5:  # Favorite
                 return round(-100 / (abs(prob - 1)))
@@ -46,16 +48,17 @@ class FFBookie(object):
 
         home_money_line = prob_to_money_line(home_win_prob_adjusted)
         away_money_line = prob_to_money_line(away_win_prob_adjusted)
-        
+
         if home_money_line > 0 and away_money_line > 0:
-            return f"home ML: +{home_money_line}, away ML: +{away_money_line}"
-        elif home_money_line > 0:
+            home_money_line *= -1
+            away_money_line *= -1
+        
+        if home_money_line > 0:
             return f"home ML: +{home_money_line}, away ML: {away_money_line}"
         elif away_money_line > 0:
             return f"home ML: {home_money_line}, away ML: +{away_money_line}"
         else:
             return f"home ML: {home_money_line}, away ML: {away_money_line}"
-
 
     def calculate_odds(self, week: int) -> None:
         box_scores = self.league.box_scores(week)
