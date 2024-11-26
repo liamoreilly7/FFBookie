@@ -74,7 +74,7 @@ class FFBookie(object):
             ou = self._getOU(home_proj, away_proj)
             ml = self._getML(home_proj, away_proj)
 
-            new_row = {"matchup": matchup + 1, "home": home_team.team_name, "away": away_team.team_name, "spread (+110)": spread, "O/U (+110)": ou, "ML": ml}
+            new_row = {"matchup": matchup + 1, "home": home_team.team_name, "away": away_team.team_name, "spread (-110)": spread, "O/U (-110)": ou, "ML": ml}
             self.odds_df = pd.concat([self.odds_df, pd.DataFrame([new_row])], ignore_index=True)
 
     def save_odds(self, week) -> None:  
