@@ -6,7 +6,7 @@ import math
 class FFBookie(object):
     def __init__(self):
         self.league = self._setLeague(605278, 2024)
-        self.odds_df = pd.DataFrame(columns=["matchup", "home", "away", "spread (+110)", "O/U (+110)", "ML"])
+        self.odds_df = pd.DataFrame(columns=["matchup", "home", "away", "spread (-110)", "O/U (-110)", "ML"])
         
     def __repr__(self) -> str:
         return "Odds for Domination League"
